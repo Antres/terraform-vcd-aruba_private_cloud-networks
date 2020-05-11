@@ -15,7 +15,7 @@ locals {
   routed                    = tolist(compact([for network in var.networks: network.routed ? network.name : ""]))
     
   # A list of network names with attribute "routed" is setted to FALSE
-  isolated                  = tolist(compact([for network in var.networks: !network.routed ? network.name : ""]))
+  isolated                  = compact([for network in var.networks: !network.routed ? network.name : ""])
   
   # A list of network names where DHCP feature is required
   dhcp                      = tolist(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
