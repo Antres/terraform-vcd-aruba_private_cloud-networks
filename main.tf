@@ -5,7 +5,8 @@ terraform {
 
 locals {
   defaults                   = {
-    dns                      = "1.1.1.1"
+    dns1                      = "8.8.8.8"
+    dns2                      = "8.8.4.4"
     lease_time               = 3600
   }
   
