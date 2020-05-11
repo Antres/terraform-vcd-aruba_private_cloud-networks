@@ -20,11 +20,6 @@ locals {
   # A list of network names where DHCP feature is required
   dhcp                      = tolist(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
 }
-resource "null_resource" "local_networks" {
-  triggers = {
-    networks = local.networks
-  }
-}
     
 resource "vcd_network_routed" "roueted-dhcp" {
   for_each                  = setintersection(local.routed, local.dhcp)
@@ -39,8 +34,8 @@ resource "vcd_network_routed" "roueted-dhcp" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
   
-    dns1                    = lookup(local.networks[each.value].dhcp.dns, 0, local.defaults_dns[0])
-    dns2                    = lookup(local.networks[each.value].dhcp.dns, 1, local.defaults_dns[1])
+    dns1                    = local.networks[each.value].dhcp.dns[0]
+    dns2                    = local.networks[each.value].dhcp.dns[1]
   
     dhcp_pool {
       start_address         = coalesce(local.networks[each.value].dhcp.start_range, cidrhost(local.networks[each.value].network, 2))
