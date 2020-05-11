@@ -4,24 +4,24 @@ terraform {
 }
 
 locals {
-  defaults_dns               = toset(["8.8.8.8", "8.8.4.4"])
+  defaults_dns               = tolist(["8.8.8.8", "8.8.4.4"])
   defaults_lease_time        = 3600
   
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
-  networks                  = zipmap(toset([for network in var.networks: network.name]), toset(var.networks))
+  networks                  = zipmap([for network in var.networks: network.name], toset(var.networks))
     
   # A list of network names with attribute "routed" is setted to TRUE
-  routed                    = toset(compact([for network in var.networks: network.routed ? network.name : ""]))
+  routed                    = tolist(compact([for network in var.networks: network.routed ? network.name : ""]))
     
   # A list of network names with attribute "routed" is setted to FALSE
-  isolated                  = toset(compact([for network in var.networks: !network.routed ? network.name : ""]))
+  isolated                  = tolist(compact([for network in var.networks: !network.routed ? network.name : ""]))
   
   # A list of network names where DHCP feature is required
-  dhcp                      = toset(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
+  dhcp                      = tolist(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
 }
 
 resource "vcd_network_routed" "roueted-dhcp" {
-  for_each                  = setintersection(local.routed, local.dhcp)
+  for_each                  = tolist(setintersection(local.routed, local.dhcp))
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
@@ -45,7 +45,7 @@ resource "vcd_network_routed" "roueted-dhcp" {
 }
 
 resource "vcd_network_routed" "roueted-nodhcp" {
-  for_each                  = toset(setsubtract(local.routed, local.dhcp))
+  for_each                  = tolist(setsubtract(local.routed, local.dhcp))
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
