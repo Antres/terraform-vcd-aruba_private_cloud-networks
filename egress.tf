@@ -13,4 +13,6 @@ resource "vcd_nsxv_snat" "nsxv-snat" {
 
     original_address        = local.networks[local.egress[count.index].name].network
     translated_address      = coalesce(local.egress[count.index].egress.with_address, var.region.edge.default_external_network_ip)
+  
+    depends_on = [ vcd_network_routed.roueted-dhcp, vcd_network_routed.roueted-nodhcp ]
 }
