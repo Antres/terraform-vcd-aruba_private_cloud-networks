@@ -8,7 +8,6 @@ locals {
   defaults_lease_time        = 3600
   
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
-  #networks                  = zipmap(tolist([for network in var.networks: network.name]), tolist(var.networks))
   networks                  = zipmap(var.networks[*].name, var.networks)
     
   # A list of network names with attribute "routed" is setted to TRUE
@@ -34,13 +33,12 @@ resource "vcd_network_routed" "roueted-dhcp" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
   
-    dns1                    = local.networks[each.value].dhcp.dns[0]
-    dns2                    = local.networks[each.value].dhcp.dns[1]
+    dns1                    = coalesce(local.networks[each.value].dhcp.dns[0], local.defaults_dns[0])
+    dns2                    = coalesce(local.networks[each.value].dhcp.dns[1], local.defaults_dns[1])
   
     dhcp_pool {
       start_address         = coalesce(local.networks[each.value].dhcp.start_range, cidrhost(local.networks[each.value].network, 2))
       end_address           = local.networks[each.value].dhcp.end_range
-#     default_lease_time    = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
 #     max_lease_time        = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
     }
 }
