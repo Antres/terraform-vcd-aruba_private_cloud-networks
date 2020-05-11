@@ -21,7 +21,7 @@ locals {
 }
 
 resource "vcd_network_routed" "roueted-dhcp" {
-  for_each                  = setintersection(local.routed, local.dhcp)
+  for_each                  = toset(setintersection(local.routed, local.dhcp))
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
@@ -45,7 +45,7 @@ resource "vcd_network_routed" "roueted-dhcp" {
 }
 
 resource "vcd_network_routed" "roueted-nodhcp" {
-  for_each                  = setsubtract(local.routed, local.dhcp)
+  for_each                  = toset(setsubtract(local.routed, local.dhcp))
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
