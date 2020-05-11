@@ -18,6 +18,10 @@ variable "networks" {
                                 dns               = list(string)        # A list of DNS address to assign (only 2 will be used)
                                 lease_time        = number
                               })
+    
+    egress                  = list(object({
+                                with_address      = string
+                              }))
   }))
   
   default                   = []
