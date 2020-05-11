@@ -7,6 +7,7 @@ variable "networks" {
     name                    = string
     network                 = string # ex. 192.168.0.0/24
     routed                  = bool
+    description             = string
   }))
   
   default                   = []
