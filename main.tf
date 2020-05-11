@@ -6,10 +6,12 @@ terraform {
 locals {
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
   networks                  = zipmap([for network in var.networks: network.name], var.networks)
+    
   #A list of network names with attribute "routed" is setted to TRUE
-  routed                    = compact([for network in var.networks: network.routed ? network.name : ""])
+  routed                    = toset(compact([for network in var.networks: network.routed ? network.name : ""]))
+    
   #A list of network names with attribute "routed" is setted to FALSE
-  isolated                  = compact([for network in var.networks: !network.routed ? network.name : ""])
+  isolated                  = toset(compact([for network in var.networks: !network.routed ? network.name : ""]))
 }
 
 resource "vcd_network_routed" "roueted" {
