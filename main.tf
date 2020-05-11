@@ -11,13 +11,13 @@ locals {
   networks                  = zipmap(var.networks[*].name, var.networks)
     
   # A list of network names with attribute "routed" is setted to TRUE
-  routed                    = tolist(compact([for network in var.networks: network.routed ? network.name : ""]))
+  routed                    = compact([for network in var.networks: network.routed ? network.name : ""])
     
   # A list of network names with attribute "routed" is setted to FALSE
   isolated                  = compact([for network in var.networks: !network.routed ? network.name : ""])
   
   # A list of network names where DHCP feature is required
-  dhcp                      = tolist(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
+  dhcp                      = compact([for network in var.networks: network.dhcp.enable ? network.name : ""])
 }
     
 resource "vcd_network_routed" "roueted-dhcp" {
