@@ -35,7 +35,8 @@ resource "vcd_network_routed" "roueted-dhcp" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
   
-    dns1                    = try(toset(local.networks[each.value].dhcp.dns)[0], local.defaults.dns[0])
+#   dns1                    = try(toset(local.networks[each.value].dhcp.dns)[0], local.defaults.dns[0])
+    dns1                    = toset(local.networks[each.value].dhcp.dns)[0]
     dns2                    = try(toset(local.networks[each.value].dhcp.dns)[1], local.defaults.dns[1])
   
     dhcp_pool {
