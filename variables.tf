@@ -1,4 +1,4 @@
-#variable "region" {}
+variable "region" {}
 
 variable "networks" {
   description               = "List of networks"
