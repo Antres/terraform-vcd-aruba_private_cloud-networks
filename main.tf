@@ -4,7 +4,7 @@ terraform {
 }
 
 locals {
-  defaults_dns               = tolist(["8.8.8.8", "8.8.4.4"])
+  defaults_dns               = tolist(["8.8.8.8", "1.1.1.1"])
   defaults_lease_time        = 3600
   
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
@@ -33,13 +33,13 @@ resource "vcd_network_routed" "roueted-dhcp" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
   
-    dns1                    = coalesce(try(local.networks[each.value].dhcp.dns[0], ""), local.defaults_dns[0])
-    dns2                    = coalesce(try(local.networks[each.value].dhcp.dns[1], ""), local.defaults_dns[1])
+    dns1                    = coalesce(local.networks[each.value].dhcp.dns[0], local.defaults_dns[0])
+    dns2                    = coalesce(local.networks[each.value].dhcp.dns[1], local.defaults_dns[1])
   
     dhcp_pool {
       start_address         = coalesce(local.networks[each.value].dhcp.start_range, cidrhost(local.networks[each.value].network, 2))
       end_address           = local.networks[each.value].dhcp.end_range
-#     max_lease_time        = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
+      max_lease_time        = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults_lease_time)
     }
 }
 
