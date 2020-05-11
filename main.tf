@@ -4,6 +4,11 @@ terraform {
 }
 
 locals {
+  defaults                   = {
+    dns                      = "1.1.1.1"
+    lease_time               = 3600
+  }
+  
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
   networks                  = zipmap([for network in var.networks: network.name], var.networks)
     
@@ -14,11 +19,11 @@ locals {
   isolated                  = toset(compact([for network in var.networks: !network.routed ? network.name : ""]))
   
   # A list of network names where DHCP feature is required
-  dhcp                      = toset(compact([for network in var.networks: network.dhcp.end_range != "" ? network.name : ""]))
+  dhcp                      = toset(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
 }
 
-resource "vcd_network_routed" "roueted" {
-  for_each                  = local.routed
+resource "vcd_network_routed" "roueted-dhcp" {
+  for_each                  = setintersection(local.routed, local.dhcp)
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
@@ -30,19 +35,31 @@ resource "vcd_network_routed" "roueted" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
   
-    dns1                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[0], "") : "0.0.0.0"
-    dns2                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[1], "") : "0.0.0.0"
+    dns1                    = try(local.networks[each.value].dhcp.dns[0], local.defaults.dns)
+    dns2                    = try(local.networks[each.value].dhcp.dns[1], local.defaults.dns)
   
-    dynamic "dhcp_pool" {
-      for_each              = tolist(contains(local.dhcp, each.value) ? [local.networks[each.value].dhcp] : [])
-      
-      content {
-        start_address       = coalesce(dhcp_pool.value.start_range, cidrhost(local.networks[each.value].network, 2))
-        end_address         = dhcp_pool.value.end_range
-      }
+    dhcp_pool {
+      start_address         = coalesce(local.networks[each.value].dhcp.start_range, cidrhost(local.networks[each.value].network, 2))
+      end_address           = local.networks[each.value].dhcp.end_range
+      default_lease_time    = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
+      max_lease_time        = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
     }
 }
 
+resource "vcd_network_routed" "roueted-nodhcp" {
+  for_each                  = setsubtract(local.routed, local.dhcp)
+    
+    org                     = var.region.vdc.org
+    vdc                     = var.region.vdc.name
+    
+    name                    = each.value
+    description             = local.networks[each.value].description
+      
+    gateway                 = cidrhost(local.networks[each.value].network, 1)
+    netmask                 = cidrnetmask(local.networks[each.value].network)
+    edge_gateway            = var.region.edge.name
+}
+    
 resource "vcd_network_isolated" "isolated" {
   for_each                  = local.isolated
     
