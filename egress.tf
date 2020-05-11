@@ -6,6 +6,8 @@ resource "vcd_nsxv_snat" "nsxv-snat" {
     vdc                     = var.region.vdc.name
     edge_gateway            = var.region.edge.name
   
+    description             = "Egress SNAT rule ${local.egress[count.index].name}"
+  
     network_type            = "ext"
     network_name            = tolist(var.region.edge.external_network)[0].name
 
