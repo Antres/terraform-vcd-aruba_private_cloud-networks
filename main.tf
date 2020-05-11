@@ -8,7 +8,7 @@ locals {
   defaults_lease_time        = 3600
   
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
-  networks                  = zipmap([for network in var.networks: network.name], toset(var.networks))
+  networks                  = zipmap(tolist([for network in var.networks: network.name]), tolist(var.networks))
     
   # A list of network names with attribute "routed" is setted to TRUE
   routed                    = tolist(compact([for network in var.networks: network.routed ? network.name : ""]))
