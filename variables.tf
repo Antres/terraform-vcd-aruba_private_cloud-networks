@@ -15,7 +15,7 @@ variable "networks" {
                                 enable            = bool
                                 start_range       = string              # First address to assign. If empty second ip in network will be used
                                 end_range         = string              # Last address to assign
-                                dns               = set(string)         # A list of DNS address to assign (only 2 will be used)
+                                dns               = list(string)        # A list of DNS address to assign (only 2 will be used)
                                 lease_time        = number
                               })
   }))
