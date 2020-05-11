@@ -30,8 +30,8 @@ resource "vcd_network_routed" "roueted" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
   
-    dns1                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[0], "") : null
-    dns2                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[1], "") : null
+    dns1                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[0], "") : "0.0.0.0"
+    dns2                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[1], "") : "0.0.0.0"
   
     dynamic "dhcp_pool" {
       for_each              = tolist(contains(local.dhcp, each.value) ? [local.networks[each.value].dhcp] : [])
