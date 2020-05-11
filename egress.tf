@@ -10,5 +10,5 @@ resource "vcd_nsxv_snat" "nsxv-snat" {
     network_name            = var.region.edge.external_network[0].name
 
     original_address        = local.networks[each.value.name].network
-    translated_address      = var.region.edge.default_external_network_ip
+    translated_address      = coalesce(each.value.with_address, var.region.edge.default_external_network_ip)
 }
