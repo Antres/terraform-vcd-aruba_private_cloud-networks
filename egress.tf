@@ -7,7 +7,7 @@ resource "vcd_nsxv_snat" "nsxv-snat" {
     edge_gateway            = var.region.edge.name
   
     network_type            = "ext"
-    network_name            = var.region.edge.external_network[0].name
+    network_name            = tolist(var.region.edge.external_network)[0].name
 
     original_address        = local.networks[local.egress[count.index].name].network
     translated_address      = coalesce(local.egress[count.index].egress.with_address, var.region.edge.default_external_network_ip)
