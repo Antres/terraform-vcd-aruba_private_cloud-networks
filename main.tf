@@ -37,8 +37,8 @@ resource "vcd_network_routed" "roueted" {
       for_each              = tolist(contains(local.dhcp, each.value) ? [local.networks[each.value].dhcp] : [])
       
       content {
-        start_address       = coalesce(dhcp_pool.start_range, cidrhost(local.networks[each.value].network, 2))
-        end_address         = dhcp_pool.end_range
+        start_address       = coalesce(dhcp_pool.value.start_range, cidrhost(local.networks[each.value].network, 2))
+        end_address         = dhcp_pool.value.end_range
       }
     }
 }
