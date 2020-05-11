@@ -34,7 +34,7 @@ resource "vcd_network_routed" "roueted" {
     dns2                    = contains(local.dhcp, each.value) ? try(local.networks[each.value].dhcp.dns[1], "") : ""
   
     dynamic "dhcp_pool" {
-      for_each              = tolist(contains(local.dhcp, each.value) ? local.networks[each.value].dhcp : [])
+      for_each              = tolist(contains(local.dhcp, each.value) ? [local.networks[each.value].dhcp] : [])
       
       content {
         start_address       = coalesce(dhcp_pool.start_range, cidrhost(local.networks[each.value].network, 2))
