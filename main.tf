@@ -19,7 +19,8 @@ locals {
   # A list of network names where DHCP feature is required
   dhcp                      = compact([for network in var.networks: network.dhcp.enable ? network.name : ""])
   
-  # A list of network names where EGRESS feature is required
-  egress                    = compact([for network in var.networks: length(network.egress) > 0 ? network.name : ""])
+  egress                    = [ for network in var.networks: 
+                                [ for network_egress in network.egress: 
+                                  { name = network.name, egress = network_egress}]]
 }
     
