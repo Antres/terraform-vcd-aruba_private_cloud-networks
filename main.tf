@@ -41,8 +41,8 @@ resource "vcd_network_routed" "roueted-dhcp" {
     dhcp_pool {
       start_address         = coalesce(local.networks[each.value].dhcp.start_range, cidrhost(local.networks[each.value].network, 2))
       end_address           = local.networks[each.value].dhcp.end_range
-      default_lease_time    = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
-      max_lease_time        = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
+#     default_lease_time    = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
+#     max_lease_time        = coalesce(local.networks[each.value].dhcp.lease_time, local.defaults.lease_time)
     }
 }
 
