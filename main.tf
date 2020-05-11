@@ -20,7 +20,12 @@ locals {
   # A list of network names where DHCP feature is required
   dhcp                      = tolist(compact([for network in var.networks: network.dhcp.enable ? network.name : ""]))
 }
-
+resource "null_resource" "local_networks" {
+  triggers = {
+    networks = local.networks
+  }
+}
+    
 resource "vcd_network_routed" "roueted-dhcp" {
   for_each                  = setintersection(local.routed, local.dhcp)
     
