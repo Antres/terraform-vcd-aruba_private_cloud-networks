@@ -27,3 +27,16 @@ resource "vcd_network_routed" "roueted" {
     netmask                 = cidrnetmask(local.networks[each.value].network)
     edge_gateway            = var.region.edge.name
 }
+
+resource "vcd_network_isolated" "isolated" {
+  for_each                  = local.isolated
+    
+    org                     = var.region.vdc.org
+    vdc                     = var.region.vdc.name
+    
+    name                    = each.value
+    description             = local.networks[each.value].description
+      
+    gateway                 = cidrhost(local.networks[each.value].network, 1)
+    netmask                 = cidrnetmask(local.networks[each.value].network)
+}
