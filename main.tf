@@ -60,7 +60,7 @@ resource "vcd_network_routed" "roueted-nodhcp" {
 }
     
 resource "vcd_network_isolated" "isolated" {
-  for_each                  = local.isolated
+  for_each                  = toset(local.isolated)
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
