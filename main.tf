@@ -8,7 +8,7 @@ locals {
   defaults_lease_time        = 3600
   
   #A named map of networks. local.network[<NETWORK_NAME>] => <NETWORK>
-  networks                  = zipmap([for network in var.networks: network.name], var.networks)
+  networks                  = zipmap(toset([for network in var.networks: network.name]), toset(var.networks))
     
   # A list of network names with attribute "routed" is setted to TRUE
   routed                    = toset(compact([for network in var.networks: network.routed ? network.name : ""]))
@@ -21,7 +21,7 @@ locals {
 }
 
 resource "vcd_network_routed" "roueted-dhcp" {
-  for_each                  = toset(setintersection(local.routed, local.dhcp))
+  for_each                  = setintersection(local.routed, local.dhcp)
     
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
