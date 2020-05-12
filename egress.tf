@@ -33,7 +33,7 @@ resource "vcd_nsxv_firewall_rule" "nsxv-fw" {
   }
 
   dynamic "service" {
-    for_each                = toset(each.value.egress.ports)
+    for_each                = toset(coalesce(each.value.egress.ports, ["any/any"]))
     
     content {
       port                  = split("/", service.value)[0]
