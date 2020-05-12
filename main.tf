@@ -19,8 +19,9 @@ locals {
   # A list of network names where DHCP feature is required
   dhcp                      = compact([for network in var.networks: network.dhcp.enable ? network.name : ""])
   
-  egress                    = flatten([ for network in var.networks: 
-                                [ for network_egress in network.egress: 
-                                  { name = network.name, egress = network_egress}]])
+  egress                    = { for item in flatten([ for network in var.networks: 
+                                              [ for network_egress in network.egress: 
+                                                { name = network.name, egress = network_egress}]]):
+                                  uuidv5("x500", format("CN=%s,OU=%,DC=%s,DC=%s,DC=%s", item.with_address, item.name, "networks", "aruba_private_cloud", "terraform")) => item }
 }
     
