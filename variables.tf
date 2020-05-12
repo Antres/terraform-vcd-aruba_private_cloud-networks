@@ -22,7 +22,7 @@ variable "networks" {
     egress                  = list(object({
                                 with_address      = string
                                 to                = string
-                                ports             = string
+                                ports             = list(string)
                               }))
   }))
   
