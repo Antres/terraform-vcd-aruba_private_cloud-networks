@@ -22,6 +22,6 @@ locals {
   egress                    = { for item in flatten([ for network in var.networks: 
                                               [ for network_egress in network.egress: 
                                                 { name = network.name, egress = network_egress}]]):
-                                  uuidv5("x500", format("CN=%s,CN=%s,CN=%s,OU=%s,DC=networks,DC=aruba_private_cloud,DC=terraform", item.egress,ports, item.egress.to, item.egress.with_address, item.name)) => item }
+                                  uuidv5("x500", format("CN=%s,CN=%s,CN=%s,OU=%s,DC=networks,DC=aruba_private_cloud,DC=terraform", join(", ", item.egress,ports), item.egress.to, item.egress.with_address, item.name)) => item }
 }
     
