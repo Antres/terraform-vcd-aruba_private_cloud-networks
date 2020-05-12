@@ -1,7 +1,7 @@
 resource "vcd_nsxv_snat" "nsxv-snat" {
   # If Gateway Edge is Advanced
   #count                     = var.region.edge.advanced ? length(local.egress) : 0
-  for_each                   = tomap(var.region.edge.advanced ? length(local.egress) : {})
+  for_each                   = tomap(var.region.edge.advanced ? local.egress : {})
   
     org                     = var.region.vdc.org
     vdc                     = var.region.vdc.name
